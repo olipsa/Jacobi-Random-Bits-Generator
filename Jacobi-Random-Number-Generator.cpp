@@ -1,11 +1,87 @@
 #include<NTL/ZZ.h>
+#include <NTL/vector.h>
 using namespace std;
 using namespace NTL;
+int number0 = 0, number1 = 0;
+void jacobiSymbol(int numberOfBits)
+{
+    ZZ n, t, r, a,copyOfn;
+    Vec<ZZ> p;
+    Vec<ZZ> listOfa;
+    int countPrimeNumbers = 0;
+    p.SetLength(numberOfBits);
+    listOfa.SetLength(numberOfBits);
+    n = 1;
+    for (int i = 0; i < numberOfBits; i++)
+    {
+        RandomPrime(p[i],20, 10);
+        n *= p[i];
+        RandomLen(listOfa[i],1024);
+    }
+
+    //cout << "n has " << NumBits(n) << " bits.\n";
+    //cout << "n=" << n << endl;
+    copyOfn = n;   
+    //compute Jacobi symbol for each pair (a_i,n)
+    for (int i = 0; i < numberOfBits; i++)
+    {
+
+        a = listOfa[i] % p[i];
+        n = copyOfn;
+        t = 1;
+        a = a % n;
+        if (a == 0) a == 1;
+
+        while (a != 0)
+        {
+            while (a % 2 == 0)
+            {
+                a /= 2;
+                r = n % 8;
+                if (r == 3 || r == 5)
+                    t = -t;
+
+            }
+            swap(a, n);
+            if (a % 4 == 3 && n % 4 == 3)
+                t = -t;
+            a = a % n;
+
+        }
+        if (n == 1)
+        {
+            if (t == -1)
+            {
+                cout << 1 << ' ';
+                number1++;
+            }
+            else
+            {
+                cout << 0 << ' ';
+                number0++;
+            }
+
+
+        }
+        else
+        {
+            cout << 0 << ' ';
+            number0++;
+        }
+
+    }
+    
+}
 
 int main()
 {
-    ZZ p;
-    RandomPrime(p, 512, 10);
+    int numberOfBits;
+    cout << "Select number of random bits to be generated: ";
+    cin >> numberOfBits;
+    jacobiSymbol(numberOfBits);
+    cout << "\n0 was generated " << number0 << " times and 1 was generated " << number1 << " times";
+    
+    
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
